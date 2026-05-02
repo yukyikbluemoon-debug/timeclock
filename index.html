@@ -1,656 +1,4 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0f0f1e">
-<title>⏱️ บันทึกเวลางาน</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --ink:     #0f0f1e;
-  --card:    #17172d;
-  --card2:   #1f1f38;
-  --border:  #2c2c50;
-  --purple:  #7c6fff;
-  --teal:    #00d4aa;
-  --red:     #ff5e7a;
-  --amber:   #ffab40;
-  --txt:     #eeeeff;
-  --mute:    #7878aa;
-  --faint:   #3a3a60;
-  --r:       13px;
-  --rs:      8px;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;font-family:'Sarabun',sans-serif;background:var(--ink);color:var(--txt);overflow:hidden}
-#app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;position:relative}
-
-/* ── SCREENS ── */
-.screen{display:none;flex-direction:column;flex:1;overflow:hidden}
-.screen.show{display:flex}
-
-/* ── LOGIN / REGISTER ── */
-#s-login{justify-content:center;align-items:center;gap:0;background:
-  radial-gradient(ellipse at 25% 15%,#7c6fff22 0%,transparent 55%),
-  radial-gradient(ellipse at 75% 85%,#00d4aa14 0%,transparent 50%),
-  var(--ink);padding:1.5rem}
-
-.logo-wrap{text-align:center;margin-bottom:2rem}
-.logo{width:72px;height:72px;border-radius:20px;
-  background:linear-gradient(135deg,var(--purple),var(--teal));
-  display:flex;align-items:center;justify-content:center;font-size:2.2rem;
-  margin:0 auto 1rem;box-shadow:0 0 32px #7c6fff44}
-.logo-title{font-size:1.8rem;font-weight:700;letter-spacing:-.5px}
-.logo-sub{font-size:.9rem;color:var(--mute);margin-top:4px}
-
-.login-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  padding:1.75rem;width:100%;max-width:360px;display:flex;flex-direction:column;gap:1rem}
-
-.tab-row{display:grid;grid-template-columns:1fr 1fr;background:var(--card2);
-  border-radius:var(--rs);padding:3px;gap:3px}
-.tab{padding:8px;text-align:center;border-radius:6px;cursor:pointer;
-  font-size:.85rem;font-weight:600;color:var(--mute);transition:all .2s}
-.tab.on{background:var(--purple);color:#fff}
-
-.inp{width:100%;padding:11px 14px;background:#12122288;border:1px solid var(--border);
-  border-radius:var(--rs);color:var(--txt);font-family:inherit;font-size:.95rem;
-  transition:border-color .2s;outline:none}
-.inp:focus{border-color:var(--purple)}
-.inp::placeholder{color:var(--faint)}
-
-.pin-row{display:flex;gap:8px}
-.pin-box{flex:1;padding:11px 0;text-align:center;letter-spacing:4px;font-size:1.1rem;
-  font-weight:700;background:#12122288;border:1px solid var(--border);
-  border-radius:var(--rs);color:var(--txt);outline:none;transition:border-color .2s}
-.pin-box:focus{border-color:var(--purple)}
-
-.btn-primary{width:100%;padding:13px;background:var(--purple);border:none;
-  border-radius:50px;color:#fff;font-family:inherit;font-size:1rem;font-weight:700;
-  cursor:pointer;transition:all .2s;letter-spacing:.3px}
-.btn-primary:hover{filter:brightness(1.1)}
-.btn-primary:active{transform:scale(.98)}
-
-.form-lbl{font-size:.78rem;color:var(--mute);margin-bottom:4px;font-weight:500}
-.form-grp{display:flex;flex-direction:column;gap:3px}
-
-.inline-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-
-.sel{width:100%;padding:11px 14px;background:#12122288;border:1px solid var(--border);
-  border-radius:var(--rs);color:var(--txt);font-family:inherit;font-size:.9rem;
-  outline:none;appearance:none;cursor:pointer}
-.sel option{background:var(--card)}
-
-/* ── TOPBAR ── */
-#topbar{display:flex;align-items:center;justify-content:space-between;
-  padding:.9rem 1.1rem;background:var(--card);border-bottom:1px solid var(--border);
-  flex-shrink:0}
-.tb-user{display:flex;align-items:center;gap:9px}
-.avatar{width:34px;height:34px;border-radius:50%;
-  background:linear-gradient(135deg,var(--purple),var(--teal));
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
-.tb-name{font-size:.9rem;font-weight:600}
-.tb-sub{font-size:.68rem;color:var(--mute)}
-.tb-title{font-size:1rem;font-weight:700;color:var(--purple)}
-.btn-sm{padding:5px 12px;border:1px solid var(--border);border-radius:6px;
-  background:none;color:var(--mute);font-family:inherit;font-size:.75rem;cursor:pointer}
-.btn-sm:hover{color:var(--txt);border-color:var(--purple)}
-
-/* ── OFFLINE ── */
-#offline-bar{display:none;background:#ffab4022;border-bottom:1px solid #ffab4044;
-  color:var(--amber);padding:5px 1rem;font-size:.78rem;text-align:center;flex-shrink:0}
-
-/* ── CONTENT ── */
-#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.page{display:none;padding:1rem}
-.page.on{display:block}
-
-/* ── CARD ── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  padding:1.1rem;margin-bottom:.9rem}
-.card-ttl{font-size:.72rem;font-weight:700;color:var(--mute);text-transform:uppercase;
-  letter-spacing:.06em;margin-bottom:.9rem}
-
-/* ── CLOCK ── */
-.clock-face{text-align:center;padding:1.2rem 0 .8rem}
-.c-time{font-size:3.2rem;font-weight:700;letter-spacing:-1px;line-height:1;
-  background:linear-gradient(90deg,var(--purple),var(--teal));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.c-date{font-size:.88rem;color:var(--mute);margin-top:6px}
-.status-pill{display:inline-flex;align-items:center;gap:6px;
-  padding:4px 12px;border-radius:50px;font-size:.78rem;font-weight:600;margin-top:8px}
-.pill-in{background:#00d4aa1a;color:var(--teal);border:1px solid #00d4aa33}
-.pill-out{background:#7c6fff1a;color:var(--purple);border:1px solid #7c6fff33}
-.dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 1.5s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ── GPS ── */
-.gps-bar{display:flex;align-items:center;gap:9px;padding:9px 12px;
-  background:var(--card2);border:1px solid var(--border);border-radius:var(--rs);
-  margin-bottom:.9rem;font-size:.82rem}
-.gps-name{flex:1}
-.gps-coord{font-size:.7rem;color:var(--mute)}
-
-/* ── ACTION GRID ── */
-.act-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.9rem}
-.act-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:7px;padding:1.3rem .8rem;border:1px solid;border-radius:var(--r);
-  background:none;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:600;
-  transition:all .2s;position:relative;overflow:hidden}
-.act-btn:active{transform:scale(.97)}
-.act-btn .ico{font-size:1.8rem}
-.act-btn.disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
-
-.a-in  {border-color:#00d4aa44;color:var(--teal);background:#00d4aa08}
-.a-out {border-color:#ff5e7a44;color:var(--red); background:#ff5e7a08}
-.a-lv  {border-color:#ffab4044;color:var(--amber);background:#ffab4008}
-.a-sk  {border-color:#7c6fff44;color:var(--purple);background:#7c6fff08}
-
-.act-btn:not(.disabled):hover{filter:brightness(1.15);transform:translateY(-1px)}
-
-/* ── TEXTAREA ── */
-.ta{width:100%;padding:9px 12px;background:#12122288;border:1px solid var(--border);
-  border-radius:var(--rs);color:var(--txt);font-family:inherit;font-size:.85rem;
-  resize:vertical;min-height:60px;outline:none}
-.ta:focus{border-color:var(--purple)}
-
-/* ── TODAY CHIP ── */
-#today-chip{display:none;margin-top:.7rem;padding:9px 12px;
-  background:var(--card2);border-radius:var(--rs);text-align:center}
-.chip-lbl{font-size:.72rem;color:var(--mute)}
-.chip-val{font-size:1.25rem;font-weight:700;color:var(--teal);margin-top:2px}
-
-/* ── UPLOAD ── */
-.upload-btn{width:100%;padding:10px;border:1px dashed var(--border);border-radius:var(--rs);
-  background:none;color:var(--mute);font-family:inherit;font-size:.85rem;cursor:pointer}
-.upload-btn:hover{border-color:var(--purple);color:var(--purple)}
-
-/* ── NAV ── */
-#nav{display:flex;background:var(--card);border-top:1px solid var(--border);flex-shrink:0}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:9px 4px;background:none;border:none;cursor:pointer;color:var(--faint);
-  font-size:.65rem;font-family:inherit;transition:color .2s}
-.nav-btn.on{color:var(--purple)}
-.nav-ico{font-size:1.25rem}
-
-/* ── STATS ── */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.9rem}
-.stat-box{background:var(--card2);border-radius:var(--rs);padding:.85rem;text-align:center}
-.stat-val{font-size:1.4rem;font-weight:700;color:var(--teal)}
-.stat-lbl{font-size:.7rem;color:var(--mute);margin-top:3px}
-
-/* ── CALENDAR ── */
-.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
-.cal-nav{background:none;border:none;color:var(--mute);cursor:pointer;font-size:1.1rem;padding:4px 8px}
-.cal-nav:hover{color:var(--txt)}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
-.cal-dh{font-size:.65rem;color:var(--mute);padding:3px 0;font-weight:600}
-.cal-d{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  font-size:.75rem;border-radius:7px;cursor:default;position:relative}
-.cal-d.today{border:1px solid var(--purple);color:var(--purple);font-weight:700}
-.cal-d.has-rec{background:#00d4aa12}
-.cal-d.has-rec::after{content:'';width:4px;height:4px;border-radius:50%;background:var(--teal);display:block}
-.cal-d.late::after{background:var(--amber)}
-.cal-d.cycle{background:#7c6fff0d}
-.cal-d.empty{opacity:0;pointer-events:none}
-.cal-legend{display:flex;gap:14px;font-size:.7rem;color:var(--mute);margin-top:8px}
-
-/* ── DAILY LIST ── */
-.day-row{display:flex;align-items:center;justify-content:space-between;
-  padding:9px 0;border-bottom:1px solid var(--border)}
-.day-row:last-child{border-bottom:none}
-.day-dt{font-size:.85rem;font-weight:500}
-.day-time{font-size:.72rem;color:var(--mute)}
-.h-chip{background:#7c6fff1a;color:var(--purple);border-radius:20px;
-  padding:2px 9px;font-size:.75rem;font-weight:600}
-
-/* ── TABLE ── */
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.78rem;white-space:nowrap}
-th{background:var(--card2);color:var(--mute);padding:7px 9px;text-align:left;
-  font-weight:600;border-bottom:1px solid var(--border)}
-td{padding:7px 9px;border-bottom:1px solid #1a1a30;vertical-align:middle}
-tr:hover td{background:var(--card2)}
-.bdg{display:inline-block;padding:2px 7px;border-radius:20px;font-size:.7rem;font-weight:600}
-.bdg-ok {background:#00d4aa1a;color:var(--teal)}
-.bdg-late{background:#ffab401a;color:var(--amber)}
-.bdg-sk  {background:#7c6fff1a;color:var(--purple)}
-.bdg-lv  {background:#ff5e7a1a;color:var(--red)}
-.edit-link{color:var(--purple);cursor:pointer;font-size:.72rem;text-decoration:underline}
-
-/* ── SETTINGS ── */
-.set-row{display:flex;align-items:center;justify-content:space-between;
-  padding:10px 0;border-bottom:1px solid var(--border)}
-.set-row:last-child{border-bottom:none}
-.set-lbl{font-size:.88rem}
-.set-desc{font-size:.72rem;color:var(--mute)}
-.btn-outline{padding:9px 18px;border:1px solid var(--border);border-radius:50px;
-  background:none;color:var(--txt);font-family:inherit;font-size:.85rem;cursor:pointer}
-.btn-outline:hover{border-color:var(--purple);color:var(--purple)}
-.btn-full{width:100%;margin-bottom:.5rem}
-.shift-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.9rem}
-.shift-opt{border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;cursor:pointer}
-.shift-opt.sel-on{border-color:var(--purple);background:#7c6fff0d}
-.shift-opt input{display:none}
-.shift-nm{font-size:.85rem;font-weight:600}
-.shift-tm{font-size:.7rem;color:var(--mute)}
-
-/* ── MODAL ── */
-#modal-bg{display:none;position:absolute;inset:0;background:#00000088;z-index:200;
-  align-items:center;justify-content:center;padding:1rem}
-#modal-bg.open{display:flex}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  padding:1.4rem;width:100%;max-width:400px;max-height:85vh;overflow-y:auto}
-.modal-ttl{font-size:1rem;font-weight:700;margin-bottom:1.2rem}
-.modal-act{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem}
-.m-inp{width:100%;padding:9px 12px;background:#12122288;border:1px solid var(--border);
-  border-radius:var(--rs);color:var(--txt);font-family:inherit;font-size:.88rem;outline:none;margin-top:4px}
-.m-inp:focus{border-color:var(--purple)}
-.m-sel{width:100%;padding:9px 12px;background:#12122288;border:1px solid var(--border);
-  border-radius:var(--rs);color:var(--txt);font-family:inherit;font-size:.88rem;
-  outline:none;margin-top:4px;appearance:none}
-.m-sel option{background:var(--card)}
-.m-grp{margin-bottom:.85rem}
-.m-lbl{font-size:.75rem;color:var(--mute);font-weight:500}
-
-/* ── TOAST ── */
-#toast{position:absolute;bottom:72px;left:50%;transform:translateX(-50%) translateY(60px);
-  background:var(--card2);border:1px solid var(--border);border-radius:50px;
-  padding:9px 20px;font-size:.85rem;white-space:nowrap;z-index:300;
-  transition:transform .25s;pointer-events:none}
-#toast.show{transform:translateX(-50%) translateY(0)}
-#toast.ok{border-color:#00d4aa44;color:var(--teal)}
-#toast.err{border-color:#ff5e7a44;color:var(--red)}
-
-/* ── SPINNER ── */
-.spin{display:inline-block;width:16px;height:16px;border:2px solid var(--border);
-  border-top-color:var(--purple);border-radius:50%;animation:sp .7s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-</style>
-</head>
-<body>
-<div id="app">
-
-<!-- ════════════════════════════════════════════════
-     LOGIN / REGISTER SCREEN
-════════════════════════════════════════════════ -->
-<div class="screen show" id="s-login">
-  <div class="logo-wrap">
-    <div class="logo">⏱️</div>
-    <div class="logo-title">บันทึกเวลางาน</div>
-    <div class="logo-sub">ระบบบันทึกเวลาส่วนตัว</div>
-  </div>
-
-  <div class="login-card">
-    <!-- Config warning -->
-    <div id="api-warn" style="background:#ffab4011;border:1px solid #ffab4033;border-radius:8px;padding:10px;font-size:.78rem;color:var(--amber);display:none">
-      ⚠️ ยังไม่ได้ตั้งค่า API URL — ใส่ Apps Script URL ด้านล่างก่อน
-    </div>
-
-    <div class="form-grp">
-      <div class="form-lbl">Apps Script Web App URL</div>
-      <input class="inp" id="api-url-inp" placeholder="https://script.google.com/macros/s/..." type="url">
-      <div style="font-size:.7rem;color:var(--mute);margin-top:3px">วางจาก Deploy → Web App ใน Google Apps Script</div>
-    </div>
-
-    <!-- Tab -->
-    <div class="tab-row">
-      <div class="tab on" id="tab-login" onclick="switchTab('login')">เข้าสู่ระบบ</div>
-      <div class="tab" id="tab-reg"   onclick="switchTab('reg')">สมัครใหม่</div>
-    </div>
-
-    <!-- LOGIN FORM -->
-    <div id="form-login" style="display:flex;flex-direction:column;gap:.9rem">
-      <div class="form-grp">
-        <div class="form-lbl">User ID</div>
-        <input class="inp" id="l-uid" placeholder="รหัสผู้ใช้ของคุณ" autocomplete="username">
-      </div>
-      <div class="form-grp">
-        <div class="form-lbl">PIN 4 หลัก</div>
-        <input class="inp pin-box" id="l-pin" type="password" maxlength="4"
-          placeholder="••••" inputmode="numeric" pattern="\d{4}" autocomplete="current-password">
-      </div>
-      <button class="btn-primary" onclick="doLogin()">เข้าสู่ระบบ</button>
-    </div>
-
-    <!-- REGISTER FORM -->
-    <div id="form-reg" style="display:none;flex-direction:column;gap:.85rem">
-      <div class="form-grp">
-        <div class="form-lbl">User ID (ตัวอักษรและตัวเลข)</div>
-        <input class="inp" id="r-uid" placeholder="เช่น somchai01" autocomplete="username">
-      </div>
-      <div class="form-grp">
-        <div class="form-lbl">PIN 4 หลัก</div>
-        <input class="inp pin-box" id="r-pin" type="password" maxlength="4"
-          placeholder="••••" inputmode="numeric" autocomplete="new-password">
-      </div>
-      <div class="inline-grid">
-        <div class="form-grp">
-          <div class="form-lbl">ชื่อ</div>
-          <input class="inp" id="r-fn" placeholder="ชื่อ">
-        </div>
-        <div class="form-grp">
-          <div class="form-lbl">นามสกุล</div>
-          <input class="inp" id="r-ln" placeholder="นามสกุล">
-        </div>
-      </div>
-      <div class="inline-grid">
-        <div class="form-grp">
-          <div class="form-lbl">ประเภท</div>
-          <select class="sel" id="r-type">
-            <option value="normal">ทั่วไป</option>
-            <option value="cashier">แคชเชียร์</option>
-          </select>
-        </div>
-        <div class="form-grp">
-          <div class="form-lbl">กะ</div>
-          <select class="sel" id="r-shift">
-            <option value="day">กะเช้า</option>
-            <option value="night">กะดึก</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-grp">
-        <div class="form-lbl">ค่าแรง (บาท/ชั่วโมง)</div>
-        <input class="inp" id="r-wage" type="number" placeholder="0" inputmode="decimal">
-      </div>
-      <button class="btn-primary" onclick="doRegister()">สมัครใหม่</button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════════════
-     MAIN APP SCREEN
-════════════════════════════════════════════════ -->
-<div class="screen" id="s-app">
-  <div id="offline-bar">📡 ออฟไลน์ — ข้อมูลจะ sync เมื่อกลับมาออนไลน์</div>
-
-  <!-- Topbar -->
-  <div id="topbar">
-    <div class="tb-user">
-      <div class="avatar" id="av-init">?</div>
-      <div>
-        <div class="tb-name" id="tb-name">—</div>
-        <div class="tb-sub" id="tb-uid">—</div>
-      </div>
-    </div>
-    <div class="tb-title">⏱️ TimeClock</div>
-    <button class="btn-sm" onclick="doLogout()">ออก</button>
-  </div>
-
-  <!-- Content -->
-  <div id="content">
-
-    <!-- ── PAGE CLOCK ── -->
-    <div class="page on" id="pg-clock">
-
-      <div class="card">
-        <div class="clock-face">
-          <div class="c-time" id="live-t">00:00:00</div>
-          <div class="c-date" id="live-d"></div>
-          <div id="status-area" style="margin-top:6px"></div>
-        </div>
-      </div>
-
-      <!-- GPS -->
-      <div class="card" style="padding-bottom:.9rem">
-        <div class="card-ttl">📍 ตำแหน่ง GPS</div>
-        <div class="gps-bar">
-          <span style="font-size:1.1rem" id="gps-ico">🔍</span>
-          <div style="flex:1">
-            <div class="gps-name" id="gps-name">กำลังหาตำแหน่ง...</div>
-            <div class="gps-coord" id="gps-coord"></div>
-          </div>
-          <div id="gps-dist" style="font-size:.72rem"></div>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="card">
-        <div class="card-ttl">บันทึก</div>
-        <div class="act-grid">
-          <button class="act-btn a-in"  id="btn-in"  onclick="doRecord('checkin')">
-            <span class="ico">✅</span>เข้างาน
-          </button>
-          <button class="act-btn a-out" id="btn-out" onclick="doRecord('checkout')">
-            <span class="ico">🔚</span>ออกงาน
-          </button>
-          <button class="act-btn a-lv"  onclick="doRecord('leave')">
-            <span class="ico">🏖️</span>ลาหยุด
-          </button>
-          <button class="act-btn a-sk"  onclick="doRecord('sick')">
-            <span class="ico">🤒</span>ลาป่วย
-          </button>
-        </div>
-
-        <div style="margin-bottom:.7rem">
-          <div class="form-lbl" style="margin-bottom:4px">หมายเหตุ</div>
-          <textarea class="ta" id="note" placeholder="ระบุหมายเหตุ (ถ้ามี)..."></textarea>
-        </div>
-
-        <div id="today-chip">
-          <div class="chip-lbl">วันนี้ทำงานไปแล้ว</div>
-          <div class="chip-val" id="chip-val">0 ชม. 0 นาที</div>
-        </div>
-      </div>
-
-      <!-- Company link -->
-      <div class="card" style="text-align:center">
-        <a href="http://52.76.0.10:443" target="_blank"
-          style="display:inline-flex;align-items:center;gap:8px;padding:11px 24px;
-                 background:var(--purple);border-radius:50px;color:#fff;font-weight:700;
-                 text-decoration:none;font-size:.9rem">
-          🏢 ไปยังเว็บบริษัท
-        </a>
-      </div>
-    </div>
-
-    <!-- ── PAGE DASHBOARD ── -->
-    <div class="page" id="pg-dash">
-
-      <div class="card">
-        <div class="card-ttl">📊 สรุปรอบการทำงาน</div>
-        <div id="cycle-lbl" style="font-size:.8rem;color:var(--mute);margin-bottom:.9rem"></div>
-        <div class="stat-grid">
-          <div class="stat-box"><div class="stat-val" id="sd-days">0</div><div class="stat-lbl">วันทำงาน</div></div>
-          <div class="stat-box"><div class="stat-val" id="sd-hrs">0</div><div class="stat-lbl">ชม.รวม</div></div>
-          <div class="stat-box"><div class="stat-val" id="sd-avg">0</div><div class="stat-lbl">ชม.เฉลี่ย/วัน</div></div>
-          <div class="stat-box"><div class="stat-val" id="sd-wage" style="color:var(--amber)">฿0</div><div class="stat-lbl">ค่าแรงประมาณ</div></div>
-        </div>
-      </div>
-
-      <!-- Calendar -->
-      <div class="card">
-        <div class="card-ttl">📅 ปฏิทิน</div>
-        <div class="cal-hdr">
-          <button class="cal-nav" onclick="calMove(-1)">‹</button>
-          <div id="cal-lbl" style="font-weight:600;font-size:.9rem"></div>
-          <button class="cal-nav" onclick="calMove(+1)">›</button>
-        </div>
-        <div class="cal-grid" id="cal-grid"></div>
-        <div class="cal-legend">
-          <span>🟢 ปกติ</span><span>🟡 สาย</span><span>🟣 รอบการทำงาน</span>
-        </div>
-      </div>
-
-      <!-- Daily breakdown -->
-      <div class="card">
-        <div class="card-ttl">รายวันในรอบ</div>
-        <div id="daily-list"></div>
-      </div>
-    </div>
-
-    <!-- ── PAGE HISTORY ── -->
-    <div class="page" id="pg-hist">
-      <div class="card" style="padding-bottom:0">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
-          <div class="card-ttl" style="margin:0">🗓️ ประวัติ</div>
-          <div style="display:flex;gap:6px">
-            <button class="btn-sm" onclick="doExport()">📥 Export</button>
-            <button class="btn-sm" onclick="loadRecords()">🔄</button>
-          </div>
-        </div>
-        <input type="month" class="m-inp" id="hist-month" onchange="renderHist()"
-          style="width:auto;margin-bottom:.9rem;margin-top:0">
-        <div class="tbl-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>วันที่</th><th>เข้า</th><th>ออก</th><th>รวม</th><th>สถานะ</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="hist-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── PAGE SETTINGS ── -->
-    <div class="page" id="pg-set">
-
-      <div class="card">
-        <div class="card-ttl">👤 ข้อมูลส่วนตัว</div>
-        <div class="m-grp" style="margin-bottom:.85rem">
-          <div class="m-lbl">ชื่อ</div>
-          <input class="m-inp" id="s-fn" placeholder="ชื่อ">
-        </div>
-        <div class="m-grp">
-          <div class="m-lbl">นามสกุล</div>
-          <input class="m-inp" id="s-ln" placeholder="นามสกุล">
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-ttl">🏢 สถานที่ทำงาน</div>
-        <div class="m-grp" style="margin-bottom:.85rem">
-          <div class="m-lbl">ชื่อสถานที่</div>
-          <input class="m-inp" id="s-wp" placeholder="ชื่อสถานที่">
-        </div>
-        <div class="m-grp" style="margin-bottom:.85rem">
-          <div class="m-lbl">รัศมีอนุญาต (เมตร)</div>
-          <input class="m-inp" id="s-rad" type="number" placeholder="500" value="500">
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn-outline" onclick="saveWPLocation()" style="flex:1;padding:8px">
-            📍 บันทึกตำแหน่งปัจจุบัน
-          </button>
-        </div>
-        <div id="wp-coord" style="font-size:.72rem;color:var(--mute);margin-top:5px"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-ttl">⏰ ประเภทพนักงาน & กะ</div>
-        <div class="shift-grid" style="margin-bottom:.85rem">
-          <label class="shift-opt" id="opt-n">
-            <input type="radio" name="et" value="normal" onchange="updShift()">
-            <div class="shift-nm">ทั่วไป</div>
-            <div class="shift-tm">กะเช้า 06-18 / ดึก 18-06</div>
-          </label>
-          <label class="shift-opt" id="opt-c">
-            <input type="radio" name="et" value="cashier" onchange="updShift()">
-            <div class="shift-nm">แคชเชียร์</div>
-            <div class="shift-tm">กะเช้า 07-19 / ดึก 19-07</div>
-          </label>
-        </div>
-        <div class="m-grp" style="margin-bottom:.85rem">
-          <div class="m-lbl">กะ</div>
-          <select class="m-sel" id="s-sh" onchange="updShift()">
-            <option value="day">กะเช้า</option>
-            <option value="night">กะดึก</option>
-          </select>
-        </div>
-        <div id="shift-disp" style="font-size:.8rem;color:var(--teal);padding:7px;background:var(--card2);border-radius:6px"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-ttl">💰 ค่าแรง</div>
-        <div class="m-grp">
-          <div class="m-lbl">ค่าแรง (บาท/ชั่วโมง)</div>
-          <input class="m-inp" id="s-wage" type="number" placeholder="0" inputmode="decimal">
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-ttl">🔐 เปลี่ยน PIN</div>
-        <div class="m-grp" style="margin-bottom:.85rem">
-          <div class="m-lbl">PIN ปัจจุบัน</div>
-          <input class="m-inp pin-box" id="s-pin-old" type="password" maxlength="4" placeholder="••••" inputmode="numeric">
-        </div>
-        <div class="m-grp">
-          <div class="m-lbl">PIN ใหม่</div>
-          <input class="m-inp pin-box" id="s-pin-new" type="password" maxlength="4" placeholder="••••" inputmode="numeric">
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-ttl">🔗 Google Sheet</div>
-        <div id="sheet-url-area" style="font-size:.8rem;color:var(--mute)">—</div>
-        <button class="btn-outline" id="btn-sheet" style="margin-top:8px;width:100%;padding:8px" onclick="openSheet()">
-          🔗 เปิด Google Sheet
-        </button>
-      </div>
-
-      <button class="btn-primary btn-full" onclick="saveSettings()" style="margin-top:.3rem">
-        💾 บันทึกการตั้งค่า
-      </button>
-      <button class="btn-outline btn-full" onclick="doLogout()" style="margin-top:.5rem;padding:11px">
-        🚪 ออกจากระบบ
-      </button>
-      <div style="height:1rem"></div>
-    </div>
-
-  </div><!-- /content -->
-
-  <!-- Nav -->
-  <div id="nav">
-    <button class="nav-btn on" onclick="goPage('clock',this)"><span class="nav-ico">⏰</span>บันทึก</button>
-    <button class="nav-btn" onclick="goPage('dash',this)"><span class="nav-ico">📊</span>สรุป</button>
-    <button class="nav-btn" onclick="goPage('hist',this)"><span class="nav-ico">📋</span>ประวัติ</button>
-    <button class="nav-btn" onclick="goPage('set',this)"><span class="nav-ico">⚙️</span>ตั้งค่า</button>
-  </div>
-</div><!-- /s-app -->
-
-<!-- Edit Modal -->
-<div id="modal-bg">
-  <div class="modal">
-    <div class="modal-ttl">✏️ แก้ไขข้อมูล</div>
-    <input type="hidden" id="ed-ridx">
-    <div class="m-grp"><div class="m-lbl">วันที่</div><input class="m-inp" type="date" id="ed-date"></div>
-    <div class="m-grp"><div class="m-lbl">เวลาเข้างาน</div><input class="m-inp" type="time" id="ed-in"></div>
-    <div class="m-grp"><div class="m-lbl">เวลาออกงาน</div><input class="m-inp" type="time" id="ed-out"></div>
-    <div class="m-grp"><div class="m-lbl">สถานที่</div><input class="m-inp" id="ed-place"></div>
-    <div class="m-grp"><div class="m-lbl">หมายเหตุ</div><textarea class="m-inp ta" id="ed-note"></textarea></div>
-    <div class="m-grp">
-      <div class="m-lbl">สถานะ</div>
-      <select class="m-sel" id="ed-status">
-        <option>ปกติ</option><option>สาย</option><option>ลาหยุด</option><option>ลาป่วย</option>
-      </select>
-    </div>
-    <div class="modal-act">
-      <button class="btn-outline" onclick="closeModal()">ยกเลิก</button>
-      <button class="btn-primary" onclick="saveEdit()" style="width:auto;padding:9px 20px">💾 บันทึก</button>
-    </div>
-  </div>
-</div>
-
-<div id="toast"></div>
-</div><!-- /app -->
-
 <script>
-// ✅ แบบที่ถูก - ลบ headers ออก
-async function api(action, body = {}) {
-  const fd = new FormData();
-  fd.append('action', action);
-  fd.append('data', JSON.stringify(body));
-
-  const res = await fetch(S.apiUrl, {
-    method: 'POST',
-    body: fd
-  });
-
-  return await res.json();
-}
-
 // ═══════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════
@@ -668,159 +16,10 @@ const S = {
 };
 
 // ═══════════════════════════════════════════════════
-// DATE HELPERS — NORMALIZE & FORMAT
-// ═══════════════════════════════════════════════════
-
-/**
- * แปลงค่าวันที่จากหลายรูปแบบให้เป็น string "DD/MM/YYYY"
- * รองรับ: Date object, ISO string, "DD/MM/YYYY", ""
- */
-function normalizeDate(val) {
-  if (!val && val !== 0) return '';
-  
-  // ถ้าเป็น string ที่ตรงรูปแบบอยู่แล้ว
-  if (typeof val === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(val.trim())) {
-    return val.trim();
-  }
-  
-  // ถ้าเป็น Date object หรือ ISO string
-  try {
-    const d = new Date(val);
-    if (!isNaN(d.getTime())) {
-      const day = String(d.getDate()).padStart(2, '0');
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const year = d.getFullYear();
-      return `${day}/${month}/${year}`;
-    }
-  } catch (e) {
-    console.warn('normalizeDate error:', e, val);
-  }
-  
-  // fallback: แปลงเป็น string ธรรมดา
-  return String(val).trim();
-}
-
-/**
- * แปลงวันที่เป็น "DD/MM/YYYY" จาก Date object
- */
-function fmtDate(d) {
-  if (!d) return '';
-  const date = d instanceof Date ? d : new Date(d);
-  if (isNaN(date.getTime())) return '';
-  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
-}
-
-/**
- * แปลง "DD/MM/YYYY" → "YYYY-MM-DD" สำหรับ input type=date
- */
-function toInputDate(s) {
-  if (!s) return '';
-  const parts = normalizeDate(s).split('/');
-  if (parts.length !== 3) return '';
-  const [d, m, y] = parts.map(Number);
-  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-}
-
-/**
- * แปลง "DD/MM/YYYY" → Date object
- */
-function parseDate(s) {
-  const parts = normalizeDate(s).split('/');
-  if (parts.length !== 3) return null;
-  const [d, m, y] = parts.map(Number);
-  return new Date(y, m - 1, d);
-}
-
-/**
- * คำนวณชั่วโมงทำงาน (รองรับกะดึกข้ามวัน)
- */
-function calcH(ci, co) {
-  if (!ci || !co) return 0;
-  const cleanCI = String(ci).trim();
-  const cleanCO = String(co).trim();
-  if (!/^\d{2}:\d{2}$/.test(cleanCI) || !/^\d{2}:\d{2}$/.test(cleanCO)) return 0;
-  
-  const [hi, mi] = cleanCI.split(':').map(Number);
-  const [ho, mo] = cleanCO.split(':').map(Number);
-  let diff = (ho * 60 + mo) - (hi * 60 + mi);
-  if (diff < 0) diff += 1440;   // ข้ามเที่ยงคืน
-  if (diff === 0 || diff > 1200) return 0; // เกิน 20 ชม. ถือว่าผิดพลาด
-  return diff / 60;
-}
-
-/**
- * กำหนดรอบการทำงาน (7 ของเดือน ถึง 6 ของเดือนถัดไป)
- */
-function cycleRange() {
-  const n = new Date(); 
-  const cut = 7;
-  let sy, sm, ey, em;
-  if (n.getDate() >= cut) {
-    sy = n.getFullYear(); sm = n.getMonth();
-    ey = n.getFullYear(); em = n.getMonth() + 1;
-  } else {
-    const p = new Date(n.getFullYear(), n.getMonth() - 1, 1);
-    sy = p.getFullYear(); sm = p.getMonth();
-    ey = n.getFullYear(); em = n.getMonth();
-  }
-  return {
-    start: new Date(sy, sm, cut),
-    end: new Date(ey, em, cut - 1)
-  };
-}
-
-// ═══════════════════════════════════════════════════
-// INIT & LOAD
-// ═══════════════════════════════════════════════════
-window.addEventListener('load', () => {
-  // Restore API URL
-  S.apiUrl = localStorage.getItem('tc_api') || '';
-  if (S.apiUrl) {
-    document.getElementById('api-url-inp').value = S.apiUrl;
-  } else {
-    document.getElementById('api-warn').style.display = 'block';
-  }
-
-  // Restore session
-  const u = localStorage.getItem('tc_user');
-  if (u) {
-    try {
-      S.user = JSON.parse(u);
-      S.sheetUrl = localStorage.getItem('tc_sheet_url') || '';
-      startApp();
-    } catch (e) {
-      console.error('Parse user error:', e);
-    }
-  }
-
-  // ตั้งค่าเดือนปัจจุบันก่อนเริ่มใช้งาน
-  setTodayMonth();
-  
-  // เริ่มนาฬิกา
-  startClock();
-  
-  // ตั้งค่า offline detection
-  initOffline();
-  
-  // เริ่มดึงตำแหน่ง
-  initGPS();
-});
-
-function setTodayMonth() {
-  const n = new Date();
-  const monthVal = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`;
-  const input = document.getElementById('hist-month');
-  if (input) {
-    input.value = monthVal;
-  }
-  return monthVal;
-}
-
-// ═══════════════════════════════════════════════════
-// API CALLER
+// API CALLER — ✅ ฟังก์ชันเดียวที่ใช้ได้ทั้งระบบ
 // ═══════════════════════════════════════════════════
 async function api(action, body = {}) {
-  const url = S.apiUrl || document.getElementById('api-url-inp').value.trim();
+  const url = S.apiUrl || document.getElementById('api-url-inp')?.value.trim();
   if (!url) { 
     toast('กรุณาใส่ Apps Script URL ก่อน', 'err'); 
     throw new Error('No API URL configured'); 
@@ -828,9 +27,9 @@ async function api(action, body = {}) {
   S.apiUrl = url;
   localStorage.setItem('tc_api', url);
 
+  // ✅ ส่งแบบ JSON โดยไม่ใส่ headers เพื่อเลี่ยง CORS Preflight
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action, ...body })
   });
   
@@ -842,7 +41,101 @@ async function api(action, body = {}) {
 }
 
 // ═══════════════════════════════════════════════════
-// AUTH: LOGIN / REGISTER / LOGOUT
+// DATE HELPERS
+// ═══════════════════════════════════════════════════
+function normalizeDate(val) {
+  if (!val && val !== 0) return '';
+  if (typeof val === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(val.trim())) {
+    return val.trim();
+  }
+  try {
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) {
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+  } catch (e) { console.warn('normalizeDate error:', e, val); }
+  return String(val).trim();
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const date = d instanceof Date ? d : new Date(d);
+  if (isNaN(date.getTime())) return '';
+  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+}
+
+function toInputDate(s) {
+  if (!s) return '';
+  const parts = normalizeDate(s).split('/');
+  if (parts.length !== 3) return '';
+  const [d, m, y] = parts.map(Number);
+  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+
+function parseDate(s) {
+  const parts = normalizeDate(s).split('/');
+  if (parts.length !== 3) return null;
+  const [d, m, y] = parts.map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function calcH(ci, co) {
+  if (!ci || !co) return 0;
+  const cleanCI = String(ci).trim();
+  const cleanCO = String(co).trim();
+  if (!/^\d{2}:\d{2}$/.test(cleanCI) || !/^\d{2}:\d{2}$/.test(cleanCO)) return 0;
+  const [hi, mi] = cleanCI.split(':').map(Number);
+  const [ho, mo] = cleanCO.split(':').map(Number);
+  let diff = (ho * 60 + mo) - (hi * 60 + mi);
+  if (diff < 0) diff += 1440;
+  if (diff === 0 || diff > 1200) return 0;
+  return diff / 60;
+}
+
+function cycleRange() {
+  const n = new Date(); const cut = 7;
+  let sy, sm, ey, em;
+  if (n.getDate() >= cut) { sy = n.getFullYear(); sm = n.getMonth(); ey = n.getFullYear(); em = n.getMonth() + 1; }
+  else { const p = new Date(n.getFullYear(), n.getMonth() - 1, 1); sy = p.getFullYear(); sm = p.getMonth(); ey = n.getFullYear(); em = n.getMonth(); }
+  return { start: new Date(sy, sm, cut), end: new Date(ey, em, cut - 1) };
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  S.apiUrl = localStorage.getItem('tc_api') || '';
+  if (S.apiUrl) document.getElementById('api-url-inp').value = S.apiUrl;
+  else document.getElementById('api-warn').style.display = 'block';
+
+  const u = localStorage.getItem('tc_user');
+  if (u) {
+    try {
+      S.user = JSON.parse(u);
+      S.sheetUrl = localStorage.getItem('tc_sheet_url') || '';
+      startApp();
+    } catch (e) { console.error('Parse user error:', e); }
+  }
+
+  setTodayMonth();
+  startClock();
+  initOffline();
+  initGPS();
+});
+
+function setTodayMonth() {
+  const n = new Date();
+  const monthVal = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`;
+  const input = document.getElementById('hist-month');
+  if (input) input.value = monthVal;
+  return monthVal;
+}
+
+// ═══════════════════════════════════════════════════
+// AUTH
 // ═══════════════════════════════════════════════════
 function switchTab(t) {
   document.getElementById('tab-login').classList.toggle('on', t === 'login');
@@ -854,17 +147,14 @@ function switchTab(t) {
 async function doLogin() {
   const uid = v('l-uid'), pin = v('l-pin');
   if (!uid || !pin) { toast('กรอก UserID และ PIN', 'err'); return; }
-  
   try {
     const r = await api('login', { userId: uid, pin });
     if (!r.ok) { toast(r.error || 'ล็อกอินล้มเหลว', 'err'); return; }
-    
     S.user = r.user;
     S.sheetUrl = r.sheetUrl || '';
     localStorage.setItem('tc_user', JSON.stringify(S.user));
     localStorage.setItem('tc_sheet_url', S.sheetUrl);
     document.getElementById('l-pin').value = '';
-    
     startApp();
   } catch (e) {
     console.error('Login error:', e);
@@ -876,18 +166,15 @@ async function doRegister() {
   const uid = v('r-uid'), pin = v('r-pin');
   if (!uid) { toast('กรุณาระบุ UserID', 'err'); return; }
   if (!/^\d{4}$/.test(pin)) { toast('PIN ต้องเป็นตัวเลข 4 หลัก', 'err'); return; }
-  
   try {
     const r = await api('register', {
       userId: uid, pin,
-      firstname: v('r-fn'), 
-      lastname: v('r-ln'),
+      firstname: v('r-fn'), lastname: v('r-ln'),
       empType: document.getElementById('r-type').value,
       shift: document.getElementById('r-shift').value,
       wage: v('r-wage')
     });
     if (!r.ok) { toast(r.error || 'สมัครล้มเหลว', 'err'); return; }
-    
     toast('สมัครสำเร็จ! เข้าสู่ระบบได้เลย', 'ok');
     switchTab('login');
     document.getElementById('l-uid').value = uid;
@@ -902,12 +189,7 @@ function doLogout() {
   localStorage.removeItem('tc_user');
   localStorage.removeItem('tc_sheet_url');
   localStorage.removeItem('tc_in');
-  S.user = null; 
-  S.records = [];
-  S.isIn = false;
-  S.inTime = null;
-  S.inRowIdx = null;
-  
+  S.user = null; S.records = []; S.isIn = false; S.inTime = null; S.inRowIdx = null;
   document.getElementById('s-app').classList.remove('show');
   document.getElementById('s-login').classList.add('show');
 }
@@ -918,13 +200,11 @@ function doLogout() {
 function startApp() {
   document.getElementById('s-login').classList.remove('show');
   document.getElementById('s-app').classList.add('show');
-
   const u = S.user;
   const name = [u.firstname, u.lastname].filter(Boolean).join(' ') || u.userId;
   document.getElementById('tb-name').textContent = name;
   document.getElementById('tb-uid').textContent = u.userId;
   document.getElementById('av-init').textContent = (u.firstname?.[0] || u.userId?.[0] || '?').toUpperCase();
-
   restoreInState();
   loadRecords();
   loadLocSettings();
@@ -934,10 +214,7 @@ function startApp() {
 // GPS
 // ═══════════════════════════════════════════════════
 function initGPS() {
-  if (!navigator.geolocation) { 
-    document.getElementById('gps-name').textContent = 'GPS ไม่รองรับ'; 
-    return; 
-  }
+  if (!navigator.geolocation) { document.getElementById('gps-name').textContent = 'GPS ไม่รองรับ'; return; }
   navigator.geolocation.watchPosition(onGPS, (err) => {
     console.warn('GPS error:', err);
     document.getElementById('gps-name').textContent = 'ดึง GPS ไม่ได้';
@@ -946,17 +223,9 @@ function initGPS() {
 }
 
 async function onGPS(pos) {
-  S.gps = { 
-    lat: pos.coords.latitude, 
-    lng: pos.coords.longitude, 
-    acc: pos.coords.accuracy 
-  };
-  
-  document.getElementById('gps-coord').textContent =
-    `${S.gps.lat.toFixed(5)}, ${S.gps.lng.toFixed(5)}  (±${Math.round(S.gps.acc)}m)`;
+  S.gps = { lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy };
+  document.getElementById('gps-coord').textContent = `${S.gps.lat.toFixed(5)}, ${S.gps.lng.toFixed(5)}  (±${Math.round(S.gps.acc)}m)`;
   document.getElementById('gps-ico').textContent = '📍';
-
-  // Reverse geocoding (place name)
   try {
     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${S.gps.lat}&lon=${S.gps.lng}&format=json&accept-language=th`);
     const d = await r.json();
@@ -967,15 +236,11 @@ async function onGPS(pos) {
     console.warn('Geocoding error:', e);
     document.getElementById('gps-name').textContent = `${S.gps.lat.toFixed(4)}, ${S.gps.lng.toFixed(4)}`;
   }
-
-  // Check radius from workplace
   const ls = S.locSettings;
   if (ls.workplaceLat && ls.workplaceLng) {
     const d = haversine(S.gps.lat, S.gps.lng, +ls.workplaceLat, +ls.workplaceLng);
     const ok = d <= (ls.radius || 500);
-    document.getElementById('gps-dist').innerHTML =
-      ok ? `<span style="color:var(--teal)">✅ ${Math.round(d)}m</span>`
-         : `<span style="color:var(--red)">❌ ${Math.round(d)}m</span>`;
+    document.getElementById('gps-dist').innerHTML = ok ? `<span style="color:var(--teal)">✅ ${Math.round(d)}m</span>` : `<span style="color:var(--red)">❌ ${Math.round(d)}m</span>`;
   }
 }
 
@@ -983,26 +248,21 @@ function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) ** 2 + 
-            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * 
-            Math.sin(dLon/2) ** 2;
+  const a = Math.sin(dLat/2) ** 2 + Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * Math.sin(dLon/2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function checkRadius() {
   const ls = S.locSettings;
-  if (!ls.workplaceLat && !ls.workplaceLng) return true; // ไม่ได้ตั้งค่าสถานที่
+  if (!ls.workplaceLat && !ls.workplaceLng) return true;
   if (!S.gps) { toast('ยังไม่ได้ดึงตำแหน่ง GPS', 'err'); return false; }
   const d = haversine(S.gps.lat, S.gps.lng, +ls.workplaceLat, +ls.workplaceLng);
-  if (d > (ls.radius || 500)) { 
-    toast(`อยู่นอกรัศมีอนุญาต (${Math.round(d)}m > ${ls.radius}m)`, 'err'); 
-    return false; 
-  }
+  if (d > (ls.radius || 500)) { toast(`อยู่นอกรัศมีอนุญาต (${Math.round(d)}m > ${ls.radius}m)`, 'err'); return false; }
   return true;
 }
 
 // ═══════════════════════════════════════════════════
-// RECORD: CHECK-IN / CHECK-OUT / LEAVE
+// RECORD
 // ═══════════════════════════════════════════════════
 async function doRecord(type) {
   const now = new Date();
@@ -1013,111 +273,52 @@ async function doRecord(type) {
   if (type === 'checkin') {
     if (S.isIn) { toast('คุณเข้างานแล้ว ต้องออกงานก่อน', 'err'); return; }
     if (!checkRadius()) return;
-    
     const status = isLate(now) ? 'สาย' : 'ปกติ';
     try {
-      const r = await api('addRecord', {
-        userId: S.user.userId, 
-        date: dateStr, 
-        checkin: timeStr,
-        lat: S.gps?.lat || '', 
-        lng: S.gps?.lng || '',
-        place: document.getElementById('gps-name').textContent,
-        note, 
-        status
-      });
+      const r = await api('addRecord', { userId: S.user.userId, date: dateStr, checkin: timeStr, lat: S.gps?.lat || '', lng: S.gps?.lng || '', place: document.getElementById('gps-name').textContent, note, status });
       if (!r.ok) { toast(r.error || 'บันทึกเข้างานล้มเหลว', 'err'); return; }
-      
-      S.isIn = true; 
-      S.inTime = now; 
-      S.inRowIdx = r.rowIndex;
+      S.isIn = true; S.inTime = now; S.inRowIdx = r.rowIndex;
       localStorage.setItem('tc_in', JSON.stringify({ time: now.toISOString(), rowIndex: r.rowIndex }));
-      
       document.getElementById('note').value = '';
       toast('บันทึกเข้างานสำเร็จ ✅', 'ok');
-    } catch (e) {
-      console.error('Check-in error:', e);
-      toast('เชื่อมต่อล้มเหลว: ' + e.message, 'err');
-      return;
-    }
-
+    } catch (e) { console.error('Check-in error:', e); toast('เชื่อมต่อล้มเหลว: ' + e.message, 'err'); return; }
   } else if (type === 'checkout') {
     if (!S.isIn) { toast('ยังไม่ได้เข้างาน', 'err'); return; }
     if (!checkRadius()) return;
-    
     try {
-      const r = await api('updateCheckout', {
-        userId: S.user.userId, 
-        rowIndex: S.inRowIdx, 
-        checkout: timeStr, 
-        note
-      });
+      const r = await api('updateCheckout', { userId: S.user.userId, rowIndex: S.inRowIdx, checkout: timeStr, note });
       if (!r.ok) { toast(r.error || 'บันทึกออกงานล้มเหลว', 'err'); return; }
-      
-      S.isIn = false; 
-      S.inTime = null; 
-      S.inRowIdx = null;
+      S.isIn = false; S.inTime = null; S.inRowIdx = null;
       localStorage.removeItem('tc_in');
-      
       document.getElementById('note').value = '';
       toast('บันทึกออกงานสำเร็จ 🔚', 'ok');
-    } catch (e) {
-      console.error('Check-out error:', e);
-      toast('เชื่อมต่อล้มเหลว: ' + e.message, 'err');
-      return;
-    }
-
+    } catch (e) { console.error('Check-out error:', e); toast('เชื่อมต่อล้มเหลว: ' + e.message, 'err'); return; }
   } else {
-    // ลาหยุด / ลาป่วย
     const statusMap = { leave: 'ลาหยุด', sick: 'ลาป่วย' };
     const statusText = statusMap[type] || type;
-    
     try {
-      const r = await api('addRecord', {
-        userId: S.user.userId, 
-        date: dateStr, 
-        checkin: '', 
-        checkout: '',
-        lat: S.gps?.lat || '', 
-        lng: S.gps?.lng || '',
-        place: document.getElementById('gps-name').textContent,
-        note, 
-        status: statusText
-      });
+      const r = await api('addRecord', { userId: S.user.userId, date: dateStr, checkin: '', checkout: '', lat: S.gps?.lat || '', lng: S.gps?.lng || '', place: document.getElementById('gps-name').textContent, note, status: statusText });
       if (!r.ok) { toast(r.error || `บันทึก${statusText}ล้มเหลว`, 'err'); return; }
-      
       document.getElementById('note').value = '';
       toast(`บันทึก${statusText}สำเร็จ ✅`, 'ok');
-    } catch (e) {
-      console.error('Leave record error:', e);
-      toast('เชื่อมต่อล้มเหลว: ' + e.message, 'err');
-      return;
-    }
+    } catch (e) { console.error('Leave record error:', e); toast('เชื่อมต่อล้มเหลว: ' + e.message, 'err'); return; }
   }
-
   updateClockStatus();
-  await loadRecords(); // รีเฟรชข้อมูลหลังบันทึก
+  await loadRecords();
 }
 
 function isLate(now) {
   const u = S.user;
   const times = shiftTimes(u.empType || 'normal', u.shift || 'day');
   const [h, m] = times.start.split(':').map(Number);
-  const limit = new Date(now); 
-  limit.setHours(h, m, 0, 0);
+  const limit = new Date(now); limit.setHours(h, m, 0, 0);
   return now > limit;
 }
 
 function shiftTimes(empType, shift) {
   const map = {
-    normal:  { 
-      day: { start: '06:00', end: '18:00' }, 
-      night: { start: '18:00', end: '06:00' } 
-    },
-    cashier: { 
-      day: { start: '07:00', end: '19:00' }, 
-      night: { start: '19:00', end: '07:00' } 
-    }
+    normal: { day: { start: '06:00', end: '18:00' }, night: { start: '18:00', end: '06:00' } },
+    cashier: { day: { start: '07:00', end: '19:00' }, night: { start: '19:00', end: '07:00' } }
   };
   return map[empType]?.[shift] || { start: '08:00', end: '17:00' };
 }
@@ -1128,294 +329,127 @@ function restoreInState() {
   try {
     const d = JSON.parse(saved);
     const t = new Date(d.time);
-    // ถ้าบันทึกไว้ไม่เกิน 24 ชม. ถือว่ายังทำงานอยู่
-    if ((new Date() - t) < 24 * 60 * 60 * 1000) {
-      S.isIn = true; 
-      S.inTime = t; 
-      S.inRowIdx = d.rowIndex;
-    } else {
-      localStorage.removeItem('tc_in');
-    }
-  } catch (e) {
-    console.warn('Restore in-state error:', e);
-    localStorage.removeItem('tc_in');
-  }
+    if ((new Date() - t) < 24 * 60 * 60 * 1000) { S.isIn = true; S.inTime = t; S.inRowIdx = d.rowIndex; }
+    else { localStorage.removeItem('tc_in'); }
+  } catch (e) { console.warn('Restore in-state error:', e); localStorage.removeItem('tc_in'); }
   updateClockStatus();
 }
 
 function updateClockStatus() {
   const area = document.getElementById('status-area');
   const chip = document.getElementById('today-chip');
-  
   if (S.isIn && S.inTime) {
     area.innerHTML = '<span class="status-pill pill-in"><span class="dot"></span>กำลังทำงาน</span>';
     chip.style.display = 'block';
-    
-    const tick = () => {
-      const mins = (new Date() - S.inTime) / 60000;
-      document.getElementById('chip-val').textContent =
-        `${Math.floor(mins / 60)} ชม. ${Math.floor(mins % 60)} นาที`;
-    };
-    tick(); 
-    if (window._chipTimer) clearInterval(window._chipTimer);
-    window._chipTimer = setInterval(tick, 30000);
+    const tick = () => { const mins = (new Date() - S.inTime) / 60000; document.getElementById('chip-val').textContent = `${Math.floor(mins / 60)} ชม. ${Math.floor(mins % 60)} นาที`; };
+    tick(); if (window._chipTimer) clearInterval(window._chipTimer); window._chipTimer = setInterval(tick, 30000);
   } else {
     area.innerHTML = '<span class="status-pill pill-out">ยังไม่ได้เข้างาน</span>';
     chip.style.display = 'none';
     if (window._chipTimer) clearInterval(window._chipTimer);
   }
-  
-  // ปุ่มเข้างาน/ออกงาน
   document.getElementById('btn-in').classList.toggle('disabled', S.isIn);
   document.getElementById('btn-out').classList.toggle('disabled', !S.isIn);
 }
 
 // ═══════════════════════════════════════════════════
-// LOAD DATA & RENDER
+// LOAD & RENDER
 // ═══════════════════════════════════════════════════
 async function loadRecords() {
   if (!S.user) return;
-  
-  // แสดงสถานะกำลังโหลด
   const histBody = document.getElementById('hist-body');
-  if (histBody) {
-    histBody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1.5rem"><span class="spin"></span> กำลังโหลด...</td></tr>';
-  }
-  
+  if (histBody) histBody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1.5rem"><span class="spin"></span> กำลังโหลด...</td></tr>';
   try {
     const r = await api('getRecords', { userId: S.user.userId });
     if (r.ok) {
-      // ✅ Normalize ข้อมูลทั้งหมดก่อนเก็บ
-      S.records = (r.records || []).map(rec => ({
-        ...rec,
-        date: normalizeDate(rec.date),
-        checkin: String(rec.checkin || '').trim(),
-        checkout: String(rec.checkout || '').trim(),
-        lat: String(rec.lat || '').trim(),
-        lng: String(rec.lng || '').trim(),
-        place: String(rec.place || '').trim(),
-        note: String(rec.note || '').trim(),
-        status: String(rec.status || 'ปกติ').trim()
-      }));
-      
+      S.records = (r.records || []).map(rec => ({ ...rec, date: normalizeDate(rec.date), checkin: String(rec.checkin || '').trim(), checkout: String(rec.checkout || '').trim(), lat: String(rec.lat || '').trim(), lng: String(rec.lng || '').trim(), place: String(rec.place || '').trim(), note: String(rec.note || '').trim(), status: String(rec.status || 'ปกติ').trim() }));
       console.log('✅ Loaded records:', S.records.length);
-      renderAll(); // ✅ Render ทุกหน้า
-    } else {
-      console.error('❌ API error:', r.error);
-      toast('โหลดข้อมูลล้มเหลว: ' + (r.error || 'ไม่ทราบสาเหตุ'), 'err');
-    }
-  } catch (e) {
-    console.error('❌ Fetch error:', e);
-    toast('เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว: ' + e.message, 'err');
-  }
+      renderAll();
+    } else { console.error('❌ API error:', r.error); toast('โหลดข้อมูลล้มเหลว: ' + (r.error || 'ไม่ทราบสาเหตุ'), 'err'); }
+  } catch (e) { console.error('❌ Fetch error:', e); toast('เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว: ' + e.message, 'err'); }
 }
 
 async function loadLocSettings() {
   if (!S.user) return;
   try {
     const r = await api('getSettings', { userId: S.user.userId });
-    if (r.ok) {
-      S.locSettings = {
-        radius: r.settings?.radius || 500,
-        workplace: r.settings?.workplace || '',
-        workplaceLat: r.settings?.workplaceLat || '',
-        workplaceLng: r.settings?.workplaceLng || ''
-      };
-    }
-  } catch (e) {
-    console.warn('Load settings error:', e);
-  }
+    if (r.ok) S.locSettings = { radius: r.settings?.radius || 500, workplace: r.settings?.workplace || '', workplaceLat: r.settings?.workplaceLat || '', workplaceLng: r.settings?.workplaceLng || '' };
+  } catch (e) { console.warn('Load settings error:', e); }
 }
 
-function renderAll() {
-  renderHist();
-  renderDash();
-  renderCal();
-  updateClockStatus();
-}
+function renderAll() { renderHist(); renderDash(); renderCal(); updateClockStatus(); }
 
-// ── RENDER HISTORY ──
 function renderHist() {
   const mv = document.getElementById('hist-month')?.value;
-  if (!mv) return; // ✅ Guard: ถ้ายังไม่มีค่าเดือนให้ออกก่อน
-  
+  if (!mv) return;
   const [fy, fm] = mv.split('-').map(Number);
   const body = document.getElementById('hist-body');
   if (!body) return;
-  
-  // ✅ Filter ด้วย guard และ normalize วันที่
   const filtered = S.records.filter(r => {
     const dateStr = normalizeDate(r.date);
-    if (!dateStr) return false; // ✅ Guard: ไม่มีวันที่
-    
+    if (!dateStr) return false;
     const parts = dateStr.split('/');
-    if (parts.length !== 3) return false; // ✅ Guard: format ผิด
-    
+    if (parts.length !== 3) return false;
     const [, m, y] = parts.map(Number);
     return m === fm && y === fy;
   });
-  
-  // ✅ Render ตาราง
-  if (filtered.length === 0) {
-    body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--mute);padding:1.5rem">ไม่มีข้อมูลในเดือนนี้</td></tr>';
-    return;
-  }
-  
+  if (filtered.length === 0) { body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--mute);padding:1.5rem">ไม่มีข้อมูลในเดือนนี้</td></tr>'; return; }
   body.innerHTML = '';
   filtered.forEach(r => {
-    const safeDate = normalizeDate(r.date); // ✅ ใช้วันที่ที่ normalize แล้ว
+    const safeDate = normalizeDate(r.date);
     const hours = calcH(r.checkin, r.checkout);
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${safeDate}</td>
-      <td>${r.checkin || '—'}</td>
-      <td>${r.checkout || '—'}</td>
-      <td>${hours > 0 ? hours.toFixed(1) : '—'}</td>
-      <td><span class="bdg ${bdgCls(r.status)}">${r.status || 'ปกติ'}</span></td>
-      <td><span class="edit-link" onclick="openEdit(${r.rowIndex})">แก้ไข</span></td>
-    `;
+    tr.innerHTML = `<td>${safeDate}</td><td>${r.checkin || '—'}</td><td>${r.checkout || '—'}</td><td>${hours > 0 ? hours.toFixed(1) : '—'}</td><td><span class="bdg ${bdgCls(r.status)}">${r.status || 'ปกติ'}</span></td><td><span class="edit-link" onclick="openEdit(${r.rowIndex})">แก้ไข</span></td>`;
     body.appendChild(tr);
   });
 }
 
-function bdgCls(s) {
-  const status = String(s || '').trim().toLowerCase();
-  if (status === 'สาย') return 'bdg-late';
-  if (status === 'ลาป่วย') return 'bdg-sk';
-  if (status === 'ลาหยุด') return 'bdg-lv';
-  return 'bdg-ok';
-}
+function bdgCls(s) { const status = String(s || '').trim().toLowerCase(); if (status === 'สาย') return 'bdg-late'; if (status === 'ลาป่วย') return 'bdg-sk'; if (status === 'ลาหยุด') return 'bdg-lv'; return 'bdg-ok'; }
 
-// ── RENDER DASHBOARD ──
 function renderDash() {
   const { start, end } = cycleRange();
-  document.getElementById('cycle-lbl').textContent =
-    `รอบ ${fmtDate(start)} — ${fmtDate(end)}`;
-
-  const inCycle = S.records.filter(r => {
-    if (!r.date || !r.checkin || !r.checkout) return false;
-    const d = parseDate(r.date);
-    if (!d) return false;
-    return d >= start && d <= end;
-  });
-
+  document.getElementById('cycle-lbl').textContent = `รอบ ${fmtDate(start)} — ${fmtDate(end)}`;
+  const inCycle = S.records.filter(r => { if (!r.date || !r.checkin || !r.checkout) return false; const d = parseDate(r.date); if (!d) return false; return d >= start && d <= end; });
   const totalHours = inCycle.reduce((sum, r) => sum + calcH(r.checkin, r.checkout), 0);
   const workDays = new Set(inCycle.map(r => r.date)).size;
   const wagePerDay = S.user?.wage || 0;
   const estimatedWage = workDays * wagePerDay;
-
   document.getElementById('sd-days').textContent = workDays;
   document.getElementById('sd-hrs').textContent = totalHours.toFixed(1);
   document.getElementById('sd-avg').textContent = workDays ? (totalHours / workDays).toFixed(1) : '0';
   document.getElementById('sd-wage').textContent = `฿${Math.round(estimatedWage).toLocaleString('th-TH')}`;
-
-  // Daily list
-  const dl = document.getElementById('daily-list');
-  if (!dl) return;
-  dl.innerHTML = '';
-  
-  const byDate = {};
-  inCycle.forEach(r => { 
-    const key = normalizeDate(r.date);
-    if (!byDate[key]) byDate[key] = [];
-    byDate[key].push(r); 
-  });
-  
-  const sorted = Object.entries(byDate).sort((a, b) => {
-    const da = parseDate(a[0]), db = parseDate(b[0]);
-    return (da?.getTime() || 0) - (db?.getTime() || 0);
-  });
-  
-  if (sorted.length === 0) { 
-    dl.innerHTML = '<div style="color:var(--mute);font-size:.82rem;text-align:center;padding:.8rem">ไม่มีข้อมูลในรอบนี้</div>'; 
-    return; 
-  }
-  
-  sorted.forEach(([date, rows]) => {
-    const tot = rows.reduce((s, r) => s + calcH(r.checkin, r.checkout), 0);
-    const div = document.createElement('div'); 
-    div.className = 'day-row';
-    div.innerHTML = `
-      <div>
-        <div class="day-dt">${date}</div>
-        <div class="day-time">${rows[0].checkin || '—'} → ${rows[rows.length-1].checkout || '—'}</div>
-      </div>
-      <span class="h-chip">${tot.toFixed(1)} ชม.</span>
-    `;
-    dl.appendChild(div);
-  });
+  const dl = document.getElementById('daily-list'); if (!dl) return; dl.innerHTML = '';
+  const byDate = {}; inCycle.forEach(r => { const key = normalizeDate(r.date); if (!byDate[key]) byDate[key] = []; byDate[key].push(r); });
+  const sorted = Object.entries(byDate).sort((a, b) => { const da = parseDate(a[0]), db = parseDate(b[0]); return (da?.getTime() || 0) - (db?.getTime() || 0); });
+  if (sorted.length === 0) { dl.innerHTML = '<div style="color:var(--mute);font-size:.82rem;text-align:center;padding:.8rem">ไม่มีข้อมูลในรอบนี้</div>'; return; }
+  sorted.forEach(([date, rows]) => { const tot = rows.reduce((s, r) => s + calcH(r.checkin, r.checkout), 0); const div = document.createElement('div'); div.className = 'day-row'; div.innerHTML = `<div><div class="day-dt">${date}</div><div class="day-time">${rows[0].checkin || '—'} → ${rows[rows.length-1].checkout || '—'}</div></div><span class="h-chip">${tot.toFixed(1)} ชม.</span>`; dl.appendChild(div); });
 }
 
-// ── RENDER CALENDAR ──
 function renderCal() {
   const y = S.calMonth.getFullYear(), m = S.calMonth.getMonth();
-  document.getElementById('cal-lbl').textContent =
-    S.calMonth.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
-
-  const grid = document.getElementById('cal-grid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  
-  // Header: วันในสัปดาห์
-  ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'].forEach(h => {
-    const e = document.createElement('div'); 
-    e.className = 'cal-dh'; 
-    e.textContent = h; 
-    grid.appendChild(e);
-  });
-
-  const firstDay = new Date(y, m, 1).getDay();
-  const daysInMonth = new Date(y, m + 1, 0).getDate();
-  const { start: cs, end: ce } = cycleRange();
-  const now = new Date();
-
-  // Empty cells before first day
-  for (let i = 0; i < firstDay; i++) {
-    const e = document.createElement('div'); 
-    e.className = 'cal-d empty'; 
-    grid.appendChild(e);
-  }
-  
-  // Days
+  document.getElementById('cal-lbl').textContent = S.calMonth.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
+  const grid = document.getElementById('cal-grid'); if (!grid) return; grid.innerHTML = '';
+  ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'].forEach(h => { const e = document.createElement('div'); e.className = 'cal-dh'; e.textContent = h; grid.appendChild(e); });
+  const firstDay = new Date(y, m, 1).getDay(); const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const { start: cs, end: ce } = cycleRange(); const now = new Date();
+  for (let i = 0; i < firstDay; i++) { const e = document.createElement('div'); e.className = 'cal-d empty'; grid.appendChild(e); }
   for (let d = 1; d <= daysInMonth; d++) {
-    const el = document.createElement('div'); 
-    el.className = 'cal-d';
-    el.textContent = d;
-    
-    const dt = new Date(y, m, d);
-    const ds = fmtDate(dt);
-    
-    // Find record for this date
+    const el = document.createElement('div'); el.className = 'cal-d'; el.textContent = d;
+    const dt = new Date(y, m, d); const ds = fmtDate(dt);
     const rec = S.records.find(r => normalizeDate(r.date) === ds);
-    if (rec) {
-      el.classList.add('has-rec');
-      if (String(rec.status || '').trim() === 'สาย') el.classList.add('late');
-    }
-    
-    // Highlight cycle range
+    if (rec) { el.classList.add('has-rec'); if (String(rec.status || '').trim() === 'สาย') el.classList.add('late'); }
     if (dt >= cs && dt <= ce) el.classList.add('cycle');
-    
-    // Today
-    if (d === now.getDate() && m === now.getMonth() && y === now.getFullYear()) {
-      el.classList.add('today');
-    }
-    
+    if (d === now.getDate() && m === now.getMonth() && y === now.getFullYear()) el.classList.add('today');
     grid.appendChild(el);
   }
 }
-
-function calMove(delta) { 
-  S.calMonth = new Date(S.calMonth.getFullYear(), S.calMonth.getMonth() + delta, 1); 
-  renderCal(); 
-}
+function calMove(delta) { S.calMonth = new Date(S.calMonth.getFullYear(), S.calMonth.getMonth() + delta, 1); renderCal(); }
 
 // ═══════════════════════════════════════════════════
 // EDIT MODAL
 // ═══════════════════════════════════════════════════
 function openEdit(rowIdx) {
-  const r = S.records.find(x => x.rowIndex === rowIdx);
-  if (!r) return;
-  
+  const r = S.records.find(x => x.rowIndex === rowIdx); if (!r) return;
   document.getElementById('ed-ridx').value = rowIdx;
   document.getElementById('ed-date').value = toInputDate(r.date);
   document.getElementById('ed-in').value = r.checkin || '';
@@ -1423,278 +457,97 @@ function openEdit(rowIdx) {
   document.getElementById('ed-place').value = r.place || '';
   document.getElementById('ed-note').value = r.note || '';
   document.getElementById('ed-status').value = r.status || 'ปกติ';
-  
   document.getElementById('modal-bg').classList.add('open');
 }
-
-function closeModal() { 
-  document.getElementById('modal-bg').classList.remove('open'); 
-}
-
+function closeModal() { document.getElementById('modal-bg').classList.remove('open'); }
 async function saveEdit() {
-  const rowIdx = +document.getElementById('ed-ridx').value;
-  const dateVal = document.getElementById('ed-date').value;
-  
+  const rowIdx = +document.getElementById('ed-ridx').value; const dateVal = document.getElementById('ed-date').value;
   if (!dateVal) { toast('กรุณาเลือกวันที่', 'err'); return; }
-  
-  const d = new Date(dateVal);
-  if (isNaN(d.getTime())) { toast('รูปแบบวันที่ไม่ถูกต้อง', 'err'); return; }
-  
+  const d = new Date(dateVal); if (isNaN(d.getTime())) { toast('รูปแบบวันที่ไม่ถูกต้อง', 'err'); return; }
   try {
-    const r = await api('editRecord', {
-      userId: S.user.userId, 
-      rowIndex: rowIdx,
-      date: fmtDate(d),
-      checkin: document.getElementById('ed-in').value.trim(),
-      checkout: document.getElementById('ed-out').value.trim(),
-      place: document.getElementById('ed-place').value.trim(),
-      note: document.getElementById('ed-note').value.trim(),
-      status: document.getElementById('ed-status').value
-    });
-    
+    const r = await api('editRecord', { userId: S.user.userId, rowIndex: rowIdx, date: fmtDate(d), checkin: document.getElementById('ed-in').value.trim(), checkout: document.getElementById('ed-out').value.trim(), place: document.getElementById('ed-place').value.trim(), note: document.getElementById('ed-note').value.trim(), status: document.getElementById('ed-status').value });
     if (!r.ok) { toast(r.error || 'แก้ไขล้มเหลว', 'err'); return; }
-    
-    toast('แก้ไขสำเร็จ ✅', 'ok');
-    closeModal();
-    await loadRecords();
-  } catch (e) {
-    console.error('Save edit error:', e);
-    toast('เชื่อมต่อล้มเหลว: ' + e.message, 'err');
-  }
+    toast('แก้ไขสำเร็จ ✅', 'ok'); closeModal(); await loadRecords();
+  } catch (e) { console.error('Save edit error:', e); toast('เชื่อมต่อล้มเหลว: ' + e.message, 'err'); }
 }
 
 // ═══════════════════════════════════════════════════
-// SETTINGS PAGE
+// SETTINGS
 // ═══════════════════════════════════════════════════
 async function loadSettingsPage() {
   if (!S.user) return;
-  
   const u = S.user;
-  document.getElementById('s-fn').value = u.firstname || '';
-  document.getElementById('s-ln').value = u.lastname || '';
-  document.getElementById('s-wage').value = u.wage || '';
-  document.getElementById('s-sh').value = u.shift || 'day';
-  
-  // Emp type radio
-  document.querySelectorAll('[name=et]').forEach(r => {
-    r.checked = r.value === (u.empType || 'normal');
-  });
+  document.getElementById('s-fn').value = u.firstname || ''; document.getElementById('s-ln').value = u.lastname || '';
+  document.getElementById('s-wage').value = u.wage || ''; document.getElementById('s-sh').value = u.shift || 'day';
+  document.querySelectorAll('[name=et]').forEach(r => { r.checked = r.value === (u.empType || 'normal'); });
   document.getElementById('opt-n').classList.toggle('sel-on', (u.empType || 'normal') === 'normal');
   document.getElementById('opt-c').classList.toggle('sel-on', u.empType === 'cashier');
-  
   updShift();
-
-  // Sheet URL display
-  const sheetArea = document.getElementById('sheet-url-area');
-  if (sheetArea) {
-    sheetArea.textContent = S.sheetUrl ? 'Sheet พร้อมใช้งาน ✅' : '—';
-  }
-
-  // Load location settings
-  await loadLocSettings();
-  const ls = S.locSettings;
-  document.getElementById('s-wp').value = ls.workplace || '';
-  document.getElementById('s-rad').value = ls.radius || 500;
-  
-  const wpCoord = document.getElementById('wp-coord');
-  if (wpCoord && ls.workplaceLat && ls.workplaceLng) {
-    wpCoord.textContent = `${ls.workplaceLat.toFixed(6)}, ${ls.workplaceLng.toFixed(6)}`;
-  }
+  const sheetArea = document.getElementById('sheet-url-area'); if (sheetArea) sheetArea.textContent = S.sheetUrl ? 'Sheet พร้อมใช้งาน ✅' : '—';
+  await loadLocSettings(); const ls = S.locSettings;
+  document.getElementById('s-wp').value = ls.workplace || ''; document.getElementById('s-rad').value = ls.radius || 500;
+  const wpCoord = document.getElementById('wp-coord'); if (wpCoord && ls.workplaceLat && ls.workplaceLng) wpCoord.textContent = `${ls.workplaceLat.toFixed(6)}, ${ls.workplaceLng.toFixed(6)}`;
 }
-
 function updShift() {
   const et = document.querySelector('[name=et]:checked')?.value || 'normal';
   document.getElementById('opt-n').classList.toggle('sel-on', et === 'normal');
   document.getElementById('opt-c').classList.toggle('sel-on', et === 'cashier');
-  
-  const sh = document.getElementById('s-sh')?.value || 'day';
-  const t = shiftTimes(et, sh);
-  const el = document.getElementById('shift-disp');
-  if (el) el.textContent = `⏰ ${t.start} — ${t.end}`;
+  const sh = document.getElementById('s-sh')?.value || 'day'; const t = shiftTimes(et, sh);
+  const el = document.getElementById('shift-disp'); if (el) el.textContent = `⏰ ${t.start} — ${t.end}`;
 }
-
 async function saveSettings() {
-  const et = document.querySelector('[name=et]:checked')?.value || 'normal';
-  const sh = document.getElementById('s-sh').value;
-  const fn = document.getElementById('s-fn').value.trim();
-  const ln = document.getElementById('s-ln').value.trim();
-  const wage = parseFloat(document.getElementById('s-wage').value) || 0;
-  const op = document.getElementById('s-pin-old').value.trim();
-  const np = document.getElementById('s-pin-new').value.trim();
-
-  // Update profile
-  const body = { 
-    userId: S.user.userId, 
-    firstname: fn, 
-    lastname: ln, 
-    empType: et, 
-    shift: sh, 
-    wage 
-  };
-  
-  if (op && np) {
-    if (!/^\d{4}$/.test(np)) { toast('PIN ใหม่ต้องเป็น 4 หลัก', 'err'); return; }
-    body.currentPin = op; 
-    body.newPin = np;
-  }
-  
+  const et = document.querySelector('[name=et]:checked')?.value || 'normal'; const sh = document.getElementById('s-sh').value;
+  const fn = document.getElementById('s-fn').value.trim(); const ln = document.getElementById('s-ln').value.trim();
+  const wage = parseFloat(document.getElementById('s-wage').value) || 0; const op = document.getElementById('s-pin-old').value.trim(); const np = document.getElementById('s-pin-new').value.trim();
+  const body = { userId: S.user.userId, firstname: fn, lastname: ln, empType: et, shift: sh, wage };
+  if (op && np) { if (!/^\d{4}$/.test(np)) { toast('PIN ใหม่ต้องเป็น 4 หลัก', 'err'); return; } body.currentPin = op; body.newPin = np; }
   try {
     const r1 = await api('updateProfile', body);
     if (!r1.ok) { toast(r1.error || 'บันทึกโปรไฟล์ล้มเหลว', 'err'); return; }
-    
-    // Update local state
     S.user = { ...S.user, firstname: fn, lastname: ln, empType: et, shift: sh, wage };
     localStorage.setItem('tc_user', JSON.stringify(S.user));
     document.getElementById('tb-name').textContent = [fn, ln].filter(Boolean).join(' ') || S.user.userId;
-  } catch (e) {
-    console.error('Update profile error:', e);
-    toast('บันทึกโปรไฟล์ล้มเหลว: ' + e.message, 'err');
-    return;
-  }
-
-  // Save location settings
-  const wp = document.getElementById('s-wp').value.trim();
-  const rad = parseInt(document.getElementById('s-rad').value) || 500;
-  const ls = S.locSettings;
-  
-  try {
-    const r2 = await api('saveSettings', {
-      userId: S.user.userId, 
-      workplace: wp,
-      workplaceLat: ls.workplaceLat || '', 
-      workplaceLng: ls.workplaceLng || '',
-      radius: rad
-    });
-    if (r2.ok) { 
-      S.locSettings = { ...ls, workplace: wp, radius: rad }; 
-    }
-  } catch (e) {
-    console.warn('Save settings error:', e);
-  }
-
-  // Clear PIN fields
-  document.getElementById('s-pin-old').value = '';
-  document.getElementById('s-pin-new').value = '';
-  
+  } catch (e) { console.error('Update profile error:', e); toast('บันทึกโปรไฟล์ล้มเหลว: ' + e.message, 'err'); return; }
+  const wp = document.getElementById('s-wp').value.trim(); const rad = parseInt(document.getElementById('s-rad').value) || 500; const ls = S.locSettings;
+  try { const r2 = await api('saveSettings', { userId: S.user.userId, workplace: wp, workplaceLat: ls.workplaceLat || '', workplaceLng: ls.workplaceLng || '', radius: rad }); if (r2.ok) S.locSettings = { ...ls, workplace: wp, radius: rad }; } catch (e) { console.warn('Save settings error:', e); }
+  document.getElementById('s-pin-old').value = ''; document.getElementById('s-pin-new').value = '';
   toast('บันทึกการตั้งค่าสำเร็จ ✅', 'ok');
 }
-
-function saveWPLocation() {
-  if (!S.gps) { toast('ยังไม่ได้ดึงตำแหน่ง GPS', 'err'); return; }
-  S.locSettings.workplaceLat = S.gps.lat;
-  S.locSettings.workplaceLng = S.gps.lng;
-  
-  const wpCoord = document.getElementById('wp-coord');
-  if (wpCoord) {
-    wpCoord.textContent = `${S.gps.lat.toFixed(6)}, ${S.gps.lng.toFixed(6)}`;
-  }
-  toast('บันทึกตำแหน่งแล้ว (กด "บันทึกการตั้งค่า" เพื่อเซฟ)', 'ok');
-}
-
-function openSheet() {
-  if (S.sheetUrl) {
-    window.open(S.sheetUrl, '_blank');
-  } else {
-    toast('ยังไม่มีข้อมูล Sheet', 'err');
-  }
-}
+function saveWPLocation() { if (!S.gps) { toast('ยังไม่ได้ดึงตำแหน่ง GPS', 'err'); return; } S.locSettings.workplaceLat = S.gps.lat; S.locSettings.workplaceLng = S.gps.lng; const wpCoord = document.getElementById('wp-coord'); if (wpCoord) wpCoord.textContent = `${S.gps.lat.toFixed(6)}, ${S.gps.lng.toFixed(6)}`; toast('บันทึกตำแหน่งแล้ว (กด "บันทึกการตั้งค่า" เพื่อเซฟ)', 'ok'); }
+function openSheet() { if (S.sheetUrl) window.open(S.sheetUrl, '_blank'); else toast('ยังไม่มีข้อมูล Sheet', 'err'); }
 
 // ═══════════════════════════════════════════════════
-// EXPORT CSV
+// EXPORT
 // ═══════════════════════════════════════════════════
 function doExport() {
-  const mv = document.getElementById('hist-month').value;
-  if (!mv) { toast('กรุณาเลือกเดือนก่อน Export', 'err'); return; }
-  
-  const [fy, fm] = mv.split('-').map(Number);
-  const u = S.user;
-  const name = [u.firstname, u.lastname].filter(Boolean).join(' ') || u.userId;
-  
-  const filtered = S.records.filter(r => {
-    const dateStr = normalizeDate(r.date);
-    if (!dateStr) return false;
-    const [, m, y] = dateStr.split('/').map(Number);
-    return m === fm && y === fy;
-  });
-  
-  let csv = `ชื่อ,${name}\nรอบ,${fm === 1 ? 12 : fm - 1}/${fy} – ${fm}/${fy}\n\n`;
-  csv += 'วันที่,เข้างาน,ออกงาน,รวม ชม.,สถานที่,หมายเหตุ,สถานะ\n';
-  
-  filtered.forEach(r => {
-    csv += `${normalizeDate(r.date)},${r.checkin || ''},${r.checkout || ''},${calcH(r.checkin, r.checkout).toFixed(2)},${r.place || ''},${r.note || ''},${r.status || ''}\n`;
-  });
-  
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `timeclock_${fy}_${String(fm).padStart(2, '0')}.csv`;
-  a.click(); 
-  URL.revokeObjectURL(a.href);
-  
+  const mv = document.getElementById('hist-month').value; if (!mv) { toast('กรุณาเลือกเดือนก่อน Export', 'err'); return; }
+  const [fy, fm] = mv.split('-').map(Number); const u = S.user; const name = [u.firstname, u.lastname].filter(Boolean).join(' ') || u.userId;
+  const filtered = S.records.filter(r => { const dateStr = normalizeDate(r.date); if (!dateStr) return false; const [, m, y] = dateStr.split('/').map(Number); return m === fm && y === fy; });
+  let csv = `ชื่อ,${name}\nรอบ,${fm === 1 ? 12 : fm - 1}/${fy} – ${fm}/${fy}\n\n`; csv += 'วันที่,เข้างาน,ออกงาน,รวม ชม.,สถานที่,หมายเหตุ,สถานะ\n';
+  filtered.forEach(r => { csv += `${normalizeDate(r.date)},${r.checkin || ''},${r.checkout || ''},${calcH(r.checkin, r.checkout).toFixed(2)},${r.place || ''},${r.note || ''},${r.status || ''}\n`; });
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `timeclock_${fy}_${String(fm).padStart(2, '0')}.csv`; a.click(); URL.revokeObjectURL(a.href);
   toast('Export CSV สำเร็จ ✅', 'ok');
 }
 
 // ═══════════════════════════════════════════════════
-// NAVIGATION
+// NAV / CLOCK / UTILS
 // ═══════════════════════════════════════════════════
 function goPage(name, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
-  
   document.getElementById('pg-' + name).classList.add('on');
   if (btn) btn.classList.add('on');
-  
   if (name === 'dash') { renderDash(); renderCal(); }
   if (name === 'hist') renderHist();
   if (name === 'set') loadSettingsPage();
 }
-
-// ═══════════════════════════════════════════════════
-// CLOCK
-// ═══════════════════════════════════════════════════
 function startClock() {
-  const t = document.getElementById('live-t'), d = document.getElementById('live-d');
-  if (!t || !d) return;
-  
-  const tick = () => {
-    const n = new Date();
-    t.textContent = n.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-    d.textContent = n.toLocaleDateString('th-TH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  };
-  tick(); 
-  setInterval(tick, 1000);
+  const t = document.getElementById('live-t'), d = document.getElementById('live-d'); if (!t || !d) return;
+  const tick = () => { const n = new Date(); t.textContent = n.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }); d.textContent = n.toLocaleDateString('th-TH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); };
+  tick(); setInterval(tick, 1000);
 }
-
-// ═══════════════════════════════════════════════════
-// OFFLINE DETECTION
-// ═══════════════════════════════════════════════════
-function initOffline() {
-  const bar = document.getElementById('offline-bar');
-  if (!bar) return;
-  
-  window.addEventListener('offline', () => { bar.style.display = 'block'; });
-  window.addEventListener('online', () => { bar.style.display = 'none'; });
-  if (!navigator.onLine) bar.style.display = 'block';
-}
-
-// ═══════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════
-function v(id) { 
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : ''; 
-}
-
+function initOffline() { const bar = document.getElementById('offline-bar'); if (!bar) return; window.addEventListener('offline', () => { bar.style.display = 'block'; }); window.addEventListener('online', () => { bar.style.display = 'none'; }); if (!navigator.onLine) bar.style.display = 'block'; }
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 let _toastTimer;
-function toast(msg, cls = 'ok') {
-  const el = document.getElementById('toast');
-  if (!el) return;
-  
-  el.textContent = msg; 
-  el.className = `show ${cls}`;
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => { el.className = ''; }, 3000);
-}
+function toast(msg, cls = 'ok') { const el = document.getElementById('toast'); if (!el) return; el.textContent = msg; el.className = `show ${cls}`; clearTimeout(_toastTimer); _toastTimer = setTimeout(() => { el.className = ''; }, 3000); }
 </script>
-</body>
-</html>
